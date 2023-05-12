@@ -39,13 +39,7 @@ class MuJoCoRendererTest(parameterized.TestCase):
     renderer.update_scene(data, 'closeup')
 
     pixels = renderer.render().flatten()
-    not_all_black = False
-
-    # Pixels should all be a neutral color.
-    for pixel in pixels:
-      if pixel > 0:
-        not_all_black = True
-        break
+    not_all_black = any(pixel > 0 for pixel in pixels)
     self.assertTrue(not_all_black)
 
   def test_renderer_output_without_out(self):

@@ -78,11 +78,11 @@ class MjStructVisitor:
     """Resolves anonymous structs/unions and looks up existing typedefs."""
     # Check for anonymous struct/union.
     if '(unnamed ' in declname:
-      m = _ANONYMOUS_KEY_PATTERN.search(declname)
-      if not m:
-        raise RuntimeError('cannot parse anonymous key from {m!r}')
-      return _AnonymousTypePlaceholder(m.group(0))
+      if m := _ANONYMOUS_KEY_PATTERN.search(declname):
+        return _AnonymousTypePlaceholder(m.group(0))
 
+      else:
+        raise RuntimeError('cannot parse anonymous key from {m!r}')
     # Lookup typedef name and use it instead if one exists.
     for k, v in self._typedefs.items():
       if declname == v.declname:
@@ -96,11 +96,8 @@ class MjStructVisitor:
     kind = node.get('kind')
     if kind == 'TextComment':
       return node['text'].replace('\N{NO-BREAK SPACE}', '&nbsp;').strip()
-    else:
-      strings = []
-      for child in node['inner']:
-        strings.append(self._make_comment(child))
-      return ''.join(strings).strip()
+    strings = [self._make_comment(child) for child in node['inner']]
+    return ''.join(strings).strip()
 
   def _make_field(
       self, node: ClangJsonNode
@@ -110,12 +107,11 @@ class MjStructVisitor:
     for child in node.get('inner', ()):
       if child['kind'] == 'FullComment':
         doc = self._make_comment(child)
-    if 'name' in node:
-      field_type = self._normalize_type(node['type']['qualType'])
-      return ast_nodes.StructFieldDecl(
-          name=node['name'], type=field_type, doc=doc)
-    else:
+    if 'name' not in node:
       return _AnonymousTypePlaceholder(self._make_anonymous_key(node))
+    field_type = self._normalize_type(node['type']['qualType'])
+    return ast_nodes.StructFieldDecl(
+        name=node['name'], type=field_type, doc=doc)
 
   def _make_struct(
       self, node: ClangJsonNode

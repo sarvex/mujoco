@@ -102,7 +102,7 @@ def tokenize_quoted_substr(input_string, quote_char, placeholders=None):
     raise ValueError(f'unbalanced quotes {quote_char}...{quote_char}')
 
   output_string = ''
-  placeholders = placeholders if placeholders is not None else dict()
+  placeholders = placeholders if placeholders is not None else {}
   prev_end = -1
   for start, end in start_and_end(quote_positions):
     output_string += input_string[prev_end+1:start]
@@ -128,8 +128,7 @@ def parse_cmake_args_from_environ(env_var_name=MUJOCO_CMAKE_ARGS):
   for part in parts:
     for k, v in placeholders.items():
       part = part.replace(k, v)
-    part = part.replace('\\"', '"').replace("\\'", "'")
-    if part:
+    if part := part.replace('\\"', '"').replace("\\'", "'"):
       out.append(part)
   return out
 
@@ -311,11 +310,7 @@ class InstallScripts(install_scripts.install_scripts):
     files = set(oldfiles)
     self.outfiles = []
     for oldfile in oldfiles:
-      if oldfile.endswith('.py'):
-        newfile = oldfile[:-3]
-      else:
-        newfile = oldfile
-
+      newfile = oldfile[:-3] if oldfile.endswith('.py') else oldfile
       renamed = False
       if newfile not in files and not os.path.exists(newfile):
         if not self.dry_run:

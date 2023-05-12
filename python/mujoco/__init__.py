@@ -57,9 +57,7 @@ def _load_all_bundled_plugins():
     for filename in filenames:
       if os.path.splitext(filename)[-1] in [".dll", ".dylib", ".so"]:
         PLUGIN_HANDLES.append(ctypes.CDLL(os.path.join(directory, filename)))
-      elif filename == "__init__.py":
-        pass
-      else:
+      elif filename != "__init__.py":
         warnings.warn('Ignoring non-library in plugin directory: '
                       f'{os.path.join(directory, filename)}', ImportWarning)
 

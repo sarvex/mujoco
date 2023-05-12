@@ -152,15 +152,14 @@ the clause:
 
     if out is None:
       out = np.empty(out_shape, dtype=out_dtype)
-    else:
-      if out.shape != out_shape:
-        raise ValueError(
-            f'Expected `out.shape == {out_shape}`. Got `out.shape={out.shape}`'
-            ' instead. When using depth rendering, the out array should be of'
-            ' shape `(width, height)` and otherwise (width, height, 3).'
-            f' Got `(self.height, self.width)={(self.height, self.width)}` and'
-            f' `self._depth_rendering={self._depth_rendering}`.'
-        )
+    elif out.shape != out_shape:
+      raise ValueError(
+          f'Expected `out.shape == {out_shape}`. Got `out.shape={out.shape}`'
+          ' instead. When using depth rendering, the out array should be of'
+          ' shape `(width, height)` and otherwise (width, height, 3).'
+          f' Got `(self.height, self.width)={(self.height, self.width)}` and'
+          f' `self._depth_rendering={self._depth_rendering}`.'
+      )
 
     # Render scene and read contents of RGB and depth buffers.
     _render.mjr_render(self._rect, self._scene, self._mjr_context)

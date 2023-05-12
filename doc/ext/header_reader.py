@@ -109,10 +109,7 @@ def read(lines: List[str]) -> Dict[str, ApiDefinition]:
     if s.state == 'DOC':
       token = _find_function_start(line, stripped_functions)
       if token is not None:
-        if stripped_functions:
-          s.code = f'{s.code}{line}'
-        else:
-          s.code = f'{s.code}{line[6:]}'
+        s.code = f'{s.code}{line}' if stripped_functions else f'{s.code}{line[6:]}'
         s.token = token
         s.start('FUNCTION')
         if _is_function_end(line):
@@ -124,10 +121,7 @@ def read(lines: List[str]) -> Dict[str, ApiDefinition]:
       else:
         s.end()
     if s.state == 'FUNCTION':
-      if stripped_functions:
-        s.code = f'{s.code}{line}'
-      else:
-        s.code = f'{s.code}{line[6:]}'
+      s.code = f'{s.code}{line}' if stripped_functions else f'{s.code}{line[6:]}'
       if _is_function_end(line):
         api[s.token] = s.export_definition()
         s.end()
@@ -167,10 +161,7 @@ def read(lines: List[str]) -> Dict[str, ApiDefinition]:
 
       token = _find_function_start(line, stripped_functions)
       if token is not None:
-        if stripped_functions:
-          s.code = f'{s.code}{line}'
-        else:
-          s.code = f'{s.code}{line[6:]}'
+        s.code = f'{s.code}{line}' if stripped_functions else f'{s.code}{line[6:]}'
         s.token = token
         s.start('FUNCTION')
         if _is_function_end(line):
@@ -182,9 +173,7 @@ def read(lines: List[str]) -> Dict[str, ApiDefinition]:
 
 def _find_section(line) -> Optional[str]:
   match = _SECTION_REGEX.search(line)
-  if match is not None:
-    return match.group('section').strip()
-  return None
+  return match.group('section').strip() if match is not None else None
 
 
 def _find_function_start(line, stripped) -> Optional[str]:

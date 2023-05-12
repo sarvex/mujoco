@@ -14,6 +14,7 @@
 # ==============================================================================
 """Exports GLContext for MuJoCo Python bindings."""
 
+
 import ctypes
 import ctypes.util
 import os
@@ -36,13 +37,11 @@ if _MUJOCO_GL not in ('disable', 'disabled', 'off', 'false', '0'):
 
   if _SYSTEM == 'Linux' and _MUJOCO_GL == 'osmesa':
     from mujoco.osmesa import GLContext as _GLContext
-    GLContext = _GLContext
   elif _SYSTEM == 'Linux' and _MUJOCO_GL == 'egl':
     from mujoco.egl import GLContext as _GLContext
-    GLContext = _GLContext
   elif _SYSTEM == 'Darwin':
     from mujoco.cgl import GLContext as _GLContext
-    GLContext = _GLContext
   else:
     from mujoco.glfw import GLContext as _GLContext
-    GLContext = _GLContext
+
+  GLContext = _GLContext

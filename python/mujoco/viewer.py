@@ -100,15 +100,11 @@ class Handle:
 
   def is_running(self) -> bool:
     sim = self._sim()
-    if sim is not None:
-      return sim.exitrequest < 2
-    return False
+    return sim.exitrequest < 2 if sim is not None else False
 
   def lock(self):
     sim = self._sim()
-    if sim is not None:
-      return sim.lock()
-    return contextlib.nullcontext()
+    return sim.lock() if sim is not None else contextlib.nullcontext()
 
   def sync(self):
     sim = self._sim()
@@ -380,13 +376,13 @@ def launch_passive(model: mujoco.MjModel, data: mujoco.MjData) -> Handle:
     )
     thread.daemon = True
     thread.start()
-  else:
-    if not isinstance(_MJPYTHON, _MjPythonBase):
-      raise RuntimeError(
-          '`launch_passive` requires that the Python script be run under '
-          '`mjpython` on macOS')
+  elif isinstance(_MJPYTHON, _MjPythonBase):
     _MJPYTHON.launch_on_ui_thread(model, data, handle_return)
 
+  else:
+    raise RuntimeError(
+        '`launch_passive` requires that the Python script be run under '
+        '`mjpython` on macOS')
   return handle_return.get()
 
 
